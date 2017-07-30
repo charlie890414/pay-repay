@@ -1,7 +1,9 @@
 var express = require('express');
+var bcrypt   = require('bcrypt-nodejs');
 var router = express.Router();
 
 var isLogin = false;
+var username = "";
 var checkLoginStatus = function(req, res){
 	isLogin = false;
 	if(req.signedCookies.userid && req.signedCookies.password){
@@ -10,18 +12,40 @@ var checkLoginStatus = function(req, res){
 };
 
 router.get('/', function(req, res, next) {
-    res.render('index');
+	checkLoginStatus(req, res);
+	var name = req.signedCookies.userid;
+	console.log('Signed Cookies: ', req.signedCookies)
+	res.render( 'index', {
+		'loginStatus' : isLogin,
+		'username' : name
+	});
 });
 router.get('/login', function(req, res, next) {
-    res.render('login');
+	checkLoginStatus(req, res);
+	if(isLogin == true) res.redirect('/');
+    else res.render('login');
 });
 router.post('/login', function(req, res, next) {
-    checkLoginStatus(req, res);
-    res.cookie('userid', req.body['username'], { path: '/', signed: true});
-	res.cookie('password', req.body['password'], { path: '/', signed: true });
-    res.render( 'index', {
-		loginStatus : isLogin
-    });
+	var db = req.db;
+
+	// Get our form values. These rely on the "name" attributes
+    var email = req.body.email;
+    var password = req.body.password;
+    // Set our collection
+    var collection = db.get('users');
+
+	collection.findOne({'email':email,'password':password}, function(err, docs) {
+  		console.log(docs);
+		if(docs==null){
+			res.render('login');
+		}
+		else{
+			username=req.body['username'];
+		    res.cookie('userid', docs.username, { path: '/', signed: true});
+			res.cookie('password', req.body['password'], { path: '/', signed: true });
+		    res.redirect('/');
+		}
+	})
 });
 router.get('/signup', function(req, res, next) {
     res.render('signup');
@@ -41,7 +65,7 @@ router.post('/signup', function(req, res, next) {
    collection.insert({
 	   "username" : username,
 	   "email" : email,
-	   "password" : password
+	   "password" : bcrypt.hashSync(password, bcrypt.genSaltSync(8), null)
    }, function (err, doc) {
 	   if (err) {
 		   // If it failed, return error
@@ -54,5 +78,11 @@ router.post('/signup', function(req, res, next) {
 		   res.redirect("/");
 	   }
    });
+});
+router.get('/logout', function(req, res, next) {
+	res.clearCookie('userid');
+	res.clearCookie('password');
+	isLogin=false;
+	res.redirect('/');
 });
 module.exports = router;

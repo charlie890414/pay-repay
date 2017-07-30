@@ -18,9 +18,12 @@
         <li><a href="/repay">還錢</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-          <li><a href="/login"><span class="glyphicon glyphicon-user"></span> 登入</a></li>
-          <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> 注測</a></li>
-          <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> 登出</a></li>
+        <% if (typeof loginStatus == "undefined"||loginStatus != true) { %>
+        <li><a href="/login"><span class="glyphicon glyphicon-user"></span> 登入</a></li>
+        <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> 注測</a></li>
+        <% } else { %>
+        <li><a>你好 , <%= username %></a></li>
+        <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> 登出</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> 管理帳號 <span class="caret"></span></a>
           <ul class="dropdown-menu">
@@ -33,6 +36,7 @@
             <li><a href="#">One more separated link</a></li>
           </ul>
         </li>
+        <% } %>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->

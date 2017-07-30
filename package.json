@@ -14,6 +14,8 @@
     "morgan": "~1.8.1",
     "serve-favicon": "~2.4.2",
     "mongodb": "*",
-    "monk": "*"
+    "monk": "*",
+    "bcrypt-nodejs" : "*",
+    "connect" : "*"
   }
 }
