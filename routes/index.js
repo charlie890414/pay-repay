@@ -3,7 +3,6 @@ var bcrypt   = require('bcrypt-nodejs');
 var router = express.Router();
 
 var isLogin = false;
-var username = "";
 var checkLoginStatus = function(req, res){
 	isLogin = false;
 	if(req.signedCookies.userid && req.signedCookies.password){
@@ -14,7 +13,6 @@ var checkLoginStatus = function(req, res){
 router.get('/', function(req, res, next) {
 	checkLoginStatus(req, res);
 	var name = req.signedCookies.userid;
-	console.log('Signed Cookies: ', req.signedCookies)
 	res.render( 'index', {
 		'loginStatus' : isLogin,
 		'username' : name
@@ -34,13 +32,12 @@ router.post('/login', function(req, res, next) {
     // Set our collection
     var collection = db.get('users');
 
-	collection.findOne({'email':email,'password':password}, function(err, docs) {
-  		console.log(docs);
-		if(docs==null){
+	collection.findOne({'email':email}, function(err, docs) {
+  		console.log(docs.password);
+		if(docs==null||!bcrypt.compareSync(password, docs.password)){
 			res.render('login');
 		}
 		else{
-			username=req.body['username'];
 		    res.cookie('userid', docs.username, { path: '/', signed: true});
 			res.cookie('password', req.body['password'], { path: '/', signed: true });
 		    res.redirect('/');
@@ -73,6 +70,8 @@ router.post('/signup', function(req, res, next) {
 	   }
 	   else {
 		   // If it worked, set the header so the address bar doesn't still say /adduser
+		   res.cookie('userid', req.body['name'], { path: '/', signed: true});
+		   res.cookie('password', req.body['password'], { path: '/', signed: true });
 		   res.location("/signup");
 		   // And forward to success page
 		   res.redirect("/");
@@ -85,4 +84,32 @@ router.get('/logout', function(req, res, next) {
 	isLogin=false;
 	res.redirect('/');
 });
+
+router.get('/pay', function(req, res, next) {
+	checkLoginStatus(req, res);
+	var name = req.signedCookies.userid;
+	res.render( 'pay', {
+		'loginStatus' : isLogin,
+		'username' : name
+	});
+});
+
+router.get('/repay', function(req, res, next) {
+	checkLoginStatus(req, res);
+	var name = req.signedCookies.userid;
+	res.render( 'repay', {
+		'loginStatus' : isLogin,
+		'username' : name
+	});
+});
+
+router.get('/newtrans', function(req, res, next) {
+	checkLoginStatus(req, res);
+	var name = req.signedCookies.userid;
+	res.render( 'newtrans', {
+		'loginStatus' : isLogin,
+		'username' : name
+	});
+});
+
 module.exports = router;

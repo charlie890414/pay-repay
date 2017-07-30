@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <% include head.ejs %>
+    <body>
+        <% include navbar.ejs %>
+        <% if (typeof loginStatus != "undefined"&&loginStatus == true) { %>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Repay list</div>
+                            <div class="panel-body">
+                                <table class="table">
+                                    <thead>
+                                      <tr>
+                                        <th width="100">從</th>
+                                        <th width="100">給</th>
+                                        <th width="100">金額</th>
+                                        <th width="100">備註</th>
+                                        <th width="50"><a href="/newtrans"><button type="button" class="btn-xs btn-success" name="repay">新增</button></a></th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td>charlie890414</td>
+                                        <td>Mou</td>
+                                        <td>0.00</td>
+                                        <td>無</td>
+                                        <td><button type="button" class="btn-xs btn-danger" name="repay">已償還</button></td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                              </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h1>請先登入</h1></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </body>
+    <% include footer.ejs %>
+</html>

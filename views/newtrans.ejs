@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+    <% include head.ejs %>
+    <body>
+        <% include navbar.ejs %>
+        <% if (typeof loginStatus != "undefined"&&loginStatus == true) { %>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">New trans</div>
+                            <div class="panel-body">
+                                <form class="form-horizontal" role="form" method="POST" action="login">
+
+                                    <div class="row">
+                                        <label for="from" class="col-md-4 control-label">從</label>
+
+                                        <div class="col-md-6">
+                                            <input id="from" type="from" class="form-control" name="from"  required autofocus>
+                                        </div>
+                                    </div>
+
+                                    <br />
+
+                                    <div class="row">
+                                        <label for="to" class="col-md-4 control-label">給</label>
+
+                                        <div class="col-md-6">
+                                            <input id="to" type="to" class="form-control" name="to" required>
+                                        </div>
+                                    </div>
+
+                                    <br />
+
+                                    <div class="row">
+                                        <label for="money" class="col-md-4 control-label">金額</label>
+                                        <div class="col-md-6">
+                                            <input type="text" class="form-control" name="money" required>
+                                        </div>
+                                    </div>
+
+                                    <br />
+
+                                    <div class="row">
+                                        <label for="comment" class="col-md-4 control-label">備註</label>
+                                        <div class="col-md-6">
+                                        <textarea class="form-control" rows="5" name="comment"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <br />
+
+                                    <div class="form-group">
+                                        <div class="col-md-8 col-md-offset-4">
+                                            <button type="submit" class="btn btn-primary">送出</button>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h1>請先登入</h1></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </body>
+    <% include footer.ejs %>
+</html>
