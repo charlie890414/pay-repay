@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+    <% include head.ejs %>
+    <script>
+        $(document).ready(function () {
+            var mid = new Date();
+            var now = mid.toString();
+            var n = now.indexOf(" GMT");
+            $("textarea").append(now.slice(0,n));
+        });
+    </script>
+    <body>
+        <% include navbar.ejs %>
+        <% if (typeof loginStatus != "undefined"&&loginStatus == true) { %>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">New trans</div>
+                            <div class="panel-body">
+                                <form class="form-horizontal" role="form" method="POST" action="newtransrepay">
+
+                                    <div class="row">
+                                        <label for="from" class="col-md-4 control-label">借出</label>
+
+                                        <div class="col-md-6">
+                                            <input list="browsers" id="from" type="from" class="form-control" name="from" autocomplete="off" required autofocus>
+                                            <datalist id="browsers">
+                                                    <% for(var i=0; i<list.length; i++) {%>
+                                                        <% if(username!=list[i]){%><option value="<%= list[i] %>"><% } %>
+                                                    <% } %>
+                                                </datalist>
+                                            </datalist>
+                                        </div>
+                                    </div>
+
+                                    <br />
+
+                                    <div class="row">
+                                        <label for="to" class="col-md-4 control-label">借入</label>
+
+                                        <div class="col-md-6">
+                                            <input id="to" type="to" class="form-control" name="to" autocomplete="off" value="<%= username %>" readonly="readonly" required>
+                                        </div>
+                                    </div>
+
+                                    <br />
+
+                                    <div class="row">
+                                        <label for="money" class="col-md-4 control-label">金額</label>
+                                        <div class="col-md-6">
+                                            <input type="number" class="form-control" name="money" autocomplete="off" required>
+                                        </div>
+                                    </div>
+
+                                    <br />
+
+                                    <div class="row">
+                                        <label for="comment" class="col-md-4 control-label">備註</label>
+                                        <div class="col-md-6">
+                                        <textarea class="form-control" rows="5" name="comment" autocomplete="off"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <br />
+
+                                    <div class="form-group">
+                                        <div class="col-md-8 col-md-offset-4">
+                                            <button type="submit" class="btn btn-primary">送出</button>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><h1>請先登入</h1></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </body>
+    <% include footer.ejs %>
+</html>

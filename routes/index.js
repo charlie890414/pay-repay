@@ -13,6 +13,7 @@ var checkLoginStatus = function(req, res){
 router.get('/', function(req, res, next) {
 	checkLoginStatus(req, res);
 	var name = req.signedCookies.userid;
+	//console.log(req.signedCookies.id);
 	res.render( 'index', {
 		'loginStatus' : isLogin,
 		'username' : name
@@ -20,8 +21,12 @@ router.get('/', function(req, res, next) {
 });
 router.get('/login', function(req, res, next) {
 	checkLoginStatus(req, res);
+	var name = undefined;
 	if(isLogin == true) res.redirect('/');
-    else res.render('login');
+    else res.render( 'login', {
+		'loginStatus' : isLogin,
+		'username' : name
+	});
 });
 router.post('/login', function(req, res, next) {
 	var db = req.db;
@@ -31,21 +36,26 @@ router.post('/login', function(req, res, next) {
     var password = req.body.password;
     // Set our collection
     var collection = db.get('users');
-
-	collection.findOne({'email':email}, function(err, docs) {
-  		console.log(docs.password);
-		if(docs==null||!bcrypt.compareSync(password, docs.password)){
-			res.render('login');
+	collection.findOne({'email':email}, function(err, doc) {
+  		console.log(doc.password);
+		if(doc==null||!bcrypt.compareSync(password, doc.password)){
+			res.redirect('login');
 		}
 		else{
-		    res.cookie('userid', docs.username, { path: '/', signed: true});
-			res.cookie('password', req.body['password'], { path: '/', signed: true });
+			res.cookie('id', doc._id, { path: '/', signed: true , maxAge: 86400000});
+		    res.cookie('userid', doc.username, { path: '/', signed: true , maxAge: 86400000});
+			res.cookie('password', req.body['password'], { path: '/', signed: true , maxAge: 86400000});
 		    res.redirect('/');
 		}
 	})
 });
 router.get('/signup', function(req, res, next) {
-    res.render('signup');
+	var name = undefined;
+	if(isLogin == true) res.redirect('/');
+    else res.render( 'signup', {
+		'loginStatus' : isLogin,
+		'username' : name
+	});
 });
 router.post('/signup', function(req, res, next) {
 	// Set our internal DB variable
@@ -70,8 +80,9 @@ router.post('/signup', function(req, res, next) {
 	   }
 	   else {
 		   // If it worked, set the header so the address bar doesn't still say /adduser
-		   res.cookie('userid', req.body['name'], { path: '/', signed: true});
-		   res.cookie('password', req.body['password'], { path: '/', signed: true });
+		   res.cookie('id', doc._id, { path: '/', signed: true , maxAge: 86400000});
+		   res.cookie('userid', doc.username, { path: '/', signed: true , maxAge: 86400000});
+		   res.cookie('password', req.body['password'], { path: '/', signed: true , maxAge: 86400000});
 		   res.location("/signup");
 		   // And forward to success page
 		   res.redirect("/");
@@ -79,6 +90,7 @@ router.post('/signup', function(req, res, next) {
    });
 });
 router.get('/logout', function(req, res, next) {
+	res.clearCookie('id');
 	res.clearCookie('userid');
 	res.clearCookie('password');
 	isLogin=false;
@@ -88,28 +100,170 @@ router.get('/logout', function(req, res, next) {
 router.get('/pay', function(req, res, next) {
 	checkLoginStatus(req, res);
 	var name = req.signedCookies.userid;
-	res.render( 'pay', {
-		'loginStatus' : isLogin,
-		'username' : name
-	});
+	var id = req.signedCookies.id;
+	// Set our internal DB variable
+    var db = req.db;
+	var collection = db.get('trans');
+	collection.find({"fromid":id},function(e,docs){
+        console.log(docs);
+		res.render( 'pay', {
+			'loginStatus' : isLogin,
+			'username' : name,
+			'docs' : docs
+		});
+    });
 });
 
 router.get('/repay', function(req, res, next) {
 	checkLoginStatus(req, res);
 	var name = req.signedCookies.userid;
-	res.render( 'repay', {
-		'loginStatus' : isLogin,
-		'username' : name
-	});
+	var id = req.signedCookies.id;
+	// Set our internal DB variable
+    var db = req.db;
+	var collection = db.get('trans');
+	collection.find({"toid":id},function(e,docs){
+        console.log(docs);
+		res.render( 'repay', {
+			'loginStatus' : isLogin,
+			'username' : name,
+			'docs' : docs
+		});
+    });
 });
 
-router.get('/newtrans', function(req, res, next) {
+router.get('/newtranspay', function(req, res, next) {
 	checkLoginStatus(req, res);
 	var name = req.signedCookies.userid;
-	res.render( 'newtrans', {
-		'loginStatus' : isLogin,
-		'username' : name
-	});
+	var db = req.db;
+
+    // Set our collection
+    var collection = db.get('users');
+	collection.find({},function(e,docs){
+
+	  	var list = [];
+        var objKey = Object.keys(docs);
+        objKey.forEach(function(objectid){
+          var itemkeys = Object.keys(docs[objectid]);
+          itemkeys.forEach(function(itemkey) {
+            var itemvalue =docs[objectid][itemkey];
+            console.log(objectid+': '+itemkey+' = '+itemvalue);
+            if (itemkey == "username") {
+              list.push(itemvalue.toString());
+            }
+          })
+        })
+        console.log(list);
+
+  	  	res.render( 'newtranspay', {
+  	  		'loginStatus' : isLogin,
+  	  		'username' : name,
+  	  		'list' : list
+  	  	});
+    });
 });
 
+router.get('/newtransrepay', function(req, res, next) {
+	checkLoginStatus(req, res);
+	var name = req.signedCookies.userid;
+	var db = req.db;
+
+    // Set our collection
+    var collection = db.get('users');
+	collection.find({},{},function(e,docs){
+
+      var list = [];
+      var objKey = Object.keys(docs);
+      objKey.forEach(function(objectid){
+        var itemkeys = Object.keys(docs[objectid]);
+        itemkeys.forEach(function(itemkey) {
+          var itemvalue =docs[objectid][itemkey];
+          console.log(objectid+': '+itemkey+' = '+itemvalue);
+          if (itemkey == "username") {
+            list.push(itemvalue.toString());
+          }
+        })
+      })
+      console.log(list);
+	  	res.render( 'newtransrepay', {
+	  		'loginStatus' : isLogin,
+	  		'username' : name,
+	  		'list' : list
+	  	});
+    });
+});
+
+router.post('/newtranspay', function(req, res, next) {
+	// Set our internal DB variable
+   var db = req.db;
+   // Get our form values. These rely on the "name" attributes
+   var from = req.body.from;
+   var to = req.body.to;
+   var money = req.body.money;
+   var comment = req.body.comment;
+   // Set our collection
+   var collection = db.get('users');
+   collection.findOne({'username':from},function(e,doc){
+	   var fromid=doc._id.toString();
+	   collection.findOne({'username':to},function(e,doc){
+		   var toid=doc._id.toString();
+		   // Set another collection
+		   collection = db.get('trans');
+		   collection.insert({
+			   "fromid" : fromid,
+			   "toid" : toid,
+			   "from" : from,
+			   "to" : to,
+			   "money" : money,
+			   "comment" : comment,
+			   "fromconfirm" : false,
+			   "toconfirm" : false
+		   }, function (err, doc) {
+			   if (err) {
+				   // If it failed, return error
+				   res.send("There was a problem adding the information to the database.");
+			   }
+			   else {
+				   res.redirect("/pay");
+			   }
+		   });
+	   });
+   });
+});
+router.post('/newtransrepay', function(req, res, next) {
+	// Set our internal DB variable
+   var db = req.db;
+   // Get our form values. These rely on the "name" attributes
+   var from = req.body.from;
+   var to = req.body.to;
+   var money = req.body.money;
+   var comment = req.body.comment;
+   // Set our collection
+   var collection = db.get('users');
+   collection.findOne({'username':from},function(e,doc){
+	   var fromid=doc._id.toString();
+	   collection.findOne({'username':to},function(e,doc){
+		   var toid=doc._id.toString();
+		   // Set another collection
+		   collection = db.get('trans');
+		   collection.insert({
+			   "fromid" : fromid,
+			   "toid" : toid,
+			   "from" : from,
+			   "to" : to,
+			   "money" : money,
+			   "comment" : comment,
+			   "fromconfirm" : false,
+			   "toconfirm" : false
+		   }, function (err, doc) {
+			   if (err) {
+				   // If it failed, return error
+				   res.send("There was a problem adding the information to the database.");
+			   }
+			   else {
+				   res.redirect("/repay");
+			   }
+		   });
+	   });
+   });
+});
 module.exports = router;

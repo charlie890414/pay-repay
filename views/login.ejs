@@ -11,7 +11,7 @@
                         <div class="panel-body">
                             <form class="form-horizontal" role="form" method="POST" action="login">
 
-                                <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                                <div class="form-group">
                                     <label for="email" class="col-md-4 control-label">E-Mail</label>
 
                                     <div class="col-md-6">
@@ -19,7 +19,9 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+                                <br />
+
+                                <div class="form-group">
                                     <label for="password" class="col-md-4 control-label">密碼</label>
 
                                     <div class="col-md-6">
@@ -43,7 +45,7 @@
                                             登入
                                         </button>
 
-                                        <a class="btn btn-link" href="{{ route('password.request') }}">
+                                        <a class="btn btn-link">
                                             忘記密碼?
                                         </a>
                                     </div>

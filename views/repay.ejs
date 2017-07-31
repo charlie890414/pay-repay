@@ -10,24 +10,26 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">Repay list</div>
                             <div class="panel-body">
-                                <table class="table">
+                                <table class="rwd-table table">
                                     <thead>
                                       <tr>
                                         <th width="100">從</th>
                                         <th width="100">給</th>
                                         <th width="100">金額</th>
                                         <th width="100">備註</th>
-                                        <th width="50"><a href="/newtrans"><button type="button" class="btn-xs btn-success" name="repay">新增</button></a></th>
+                                        <th width="50"><a href="/newtransrepay"><button type="button" class="btn-xs btn-success" name="repay">新增</button></a></th>
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      <tr>
-                                        <td>charlie890414</td>
-                                        <td>Mou</td>
-                                        <td>0.00</td>
-                                        <td>無</td>
-                                        <td><button type="button" class="btn-xs btn-danger" name="repay">已償還</button></td>
-                                      </tr>
+                                        <% for(var i=0; i<docs.length; i++) {%>
+                                            <tr>
+                                                <td data-th="從"><%= docs[i].from %></td>
+                                                <td data-th="給"><%= docs[i].to %></td>
+                                                <td data-th="金額"><%= docs[i].money %></td>
+                                                <td data-th="備註"><%= docs[i].comment %></td>
+                                                <td><button type="button" class="btn-xs btn-danger" name="repay">償還</button></td>
+                                            </tr>
+                                        <% } %>
                                     </tbody>
                                   </table>
                               </div>
