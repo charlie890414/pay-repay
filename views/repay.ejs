@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
     <% include head.ejs %>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $('button.confirm').click(function () {
+            $.ajax({
+                url: 'confirm/'+this.value,
+                type: 'PUT'
+            });
+            location.reload();
+        })
+    });
+    </script>
     <body>
         <% include navbar.ejs %>
         <% if (typeof loginStatus != "undefined"&&loginStatus == true) { %>
@@ -17,17 +28,26 @@
                                         <th width="100">給</th>
                                         <th width="100">金額</th>
                                         <th width="100">備註</th>
-                                        <th width="50"><a href="/newtransrepay"><button type="button" class="btn-xs btn-success" name="repay">新增</button></a></th>
+                                        <th width="50"></th>
                                       </tr>
                                     </thead>
                                     <tbody>
+                                        <% for(var i=0; i<confirm.length; i++) {%>
+                                            <tr>
+                                                <td data-th="從"><%= confirm[i].from %></td>
+                                                <td data-th="給"><%= confirm[i].to %></td>
+                                                <td data-th="金額"><%= confirm[i].money %></td>
+                                                <td data-th="備註"><%= confirm[i].comment %></td>
+                                                <td><button type="button" class="btn-xs btn-warning confirm" value="<%= confirm[i]._id %>">確認</button></td>
+                                            </tr>
+                                        <% } %>
                                         <% for(var i=0; i<docs.length; i++) {%>
                                             <tr>
                                                 <td data-th="從"><%= docs[i].from %></td>
                                                 <td data-th="給"><%= docs[i].to %></td>
                                                 <td data-th="金額"><%= docs[i].money %></td>
                                                 <td data-th="備註"><%= docs[i].comment %></td>
-                                                <td><button type="button" class="btn-xs btn-danger" name="repay">償還</button></td>
+                                                <td><button type="button" class="btn-xs btn-danger repay" value="<%= docs[i]._id %>">償還</button></td>
                                             </tr>
                                         <% } %>
                                     </tbody>

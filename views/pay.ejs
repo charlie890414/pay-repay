@@ -4,41 +4,48 @@
     <body>
         <% include navbar.ejs %>
         <% if (typeof loginStatus != "undefined"&&loginStatus == true) { %>
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">Pay list</div>
-                            <div class="panel-body">
-                                <table class="rwd-table table">
-                                    <thead>
-                                      <tr>
-                                        <th width="100">從</th>
-                                        <th width="100">給</th>
-                                        <th width="100">金額</th>
-                                        <th width="100">備註</th>
-                                        <th width="50"><a href="/newtranspay"><button type="button" class="btn-xs btn-success" name="repay">新增</button></a></th>
-                                        <th width="50"></th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      <% for(var i=0; i<docs.length; i++) {%>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Pay list <a class="visible-xs" style="float:right" href="/newtranspay"><button type="button" class="btn-xs btn-success" name="repay">新增</button></a></div>
+                                <div class="panel-body">
+                                    <table class="rwd-table table">
+                                        <thead>
                                           <tr>
-                                              <td data-th="從"><%= docs[i].from %></td>
-                                              <td data-th="給"><%= docs[i].to %></td>
-                                              <td data-th="金額"><%= docs[i].money %></td>
-                                              <td data-th="備註"><%= docs[i].comment %></td>
-                                              <td><button type="button" class="btn-xs btn-danger" name="repay">催討</button></td>
-                                              <td><button type="button" class="btn-xs btn-danger" name="repay">取消</button></td>
+                                            <th width="100">從</th>
+                                            <th width="100">給</th>
+                                            <th width="100">金額</th>
+                                            <th width="100">備註</th>
+                                            <th width="50"><a class="hidden-xs" href="/newtranspay"><button type="button" class="btn-xs btn-success" name="repay">新增</button></a></th>
                                           </tr>
-                                      <% } %>
-                                    </tbody>
-                                  </table>
-                              </div>
+                                        </thead>
+                                        <tbody>
+                                            <% for(var i=0; i<confirm.length; i++) {%>
+                                                <tr>
+                                                    <td data-th="從"><%= confirm[i].from %></td>
+                                                    <td data-th="給"><%= confirm[i].to %></td>
+                                                    <td data-th="金額"><%= confirm[i].money %></td>
+                                                    <td data-th="備註"><%= confirm[i].comment %></td>
+                                                    <td>待確認</td>
+                                                </tr>
+                                            <% } %>
+                                          <% for(var i=0; i<docs.length; i++) {%>
+                                              <tr>
+                                                  <td data-th="從"><%= docs[i].from %></td>
+                                                  <td data-th="給"><%= docs[i].to %></td>
+                                                  <td data-th="金額"><%= docs[i].money %></td>
+                                                  <td data-th="備註"><%= docs[i].comment %></td>
+                                                  <td><button type="button" class="btn-xs btn-danger" name="repay">催討</button><button type="button" class="btn-xs btn-danger" name="repay">取消</button></td>
+                                              </tr>
+                                          <% } %>
+                                        </tbody>
+                                      </table>
+                                  </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
         <% } else { %>
             <div class="container">
                 <div class="row">

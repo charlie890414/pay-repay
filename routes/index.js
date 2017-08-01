@@ -104,13 +104,17 @@ router.get('/pay', function(req, res, next) {
 	// Set our internal DB variable
     var db = req.db;
 	var collection = db.get('trans');
-	collection.find({"fromid":id},function(e,docs){
-        console.log(docs);
-		res.render( 'pay', {
-			'loginStatus' : isLogin,
-			'username' : name,
-			'docs' : docs
-		});
+	collection.find({"fromid":id,"toconfirm":false},function(e,confirm){
+        console.log(confirm);
+		collection.find({"fromid":id,"toconfirm":true},function(e,docs){
+	        console.log(docs);
+			res.render( 'pay', {
+				'loginStatus' : isLogin,
+				'username' : name,
+				'docs' : docs,
+				'confirm' : confirm
+			});
+	    });
     });
 });
 
@@ -121,13 +125,28 @@ router.get('/repay', function(req, res, next) {
 	// Set our internal DB variable
     var db = req.db;
 	var collection = db.get('trans');
-	collection.find({"toid":id},function(e,docs){
-        console.log(docs);
-		res.render( 'repay', {
-			'loginStatus' : isLogin,
-			'username' : name,
-			'docs' : docs
-		});
+	collection.find({"toid":id,"toconfirm":false},function(e,confirm){
+        console.log(confirm);
+		collection.find({"toid":id,"toconfirm":true},function(e,docs){
+	        console.log(docs);
+			res.render( 'repay', {
+				'loginStatus' : isLogin,
+				'username' : name,
+				'docs' : docs,
+				'confirm' : confirm
+			});
+	    });
+    });
+});
+
+router.put('/confirm/:id', function(req, res, next) {
+    var db = req.db;
+	var collection = db.get('trans');
+	collection.findOne({"_id":req.params.id},function(e,confirm){
+		console.log(confirm);
+		collection.update({"_id":req.params.id},{$set:{"toconfirm" : true}},function(e,docs){
+	        console.log(docs);
+	    });
     });
 });
 
